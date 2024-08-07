@@ -67,3 +67,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+.force-visible-grid {
+  pointer-events: none;
+  z-index: 1;
+}
+
+.recharts-wrapper .recharts-cartesian-grid-horizontal line,
+.recharts-wrapper .recharts-cartesian-grid-vertical line {
+  stroke: #e0e0e0 !important;
+  stroke-dasharray: 3 3 !important;
+}
+

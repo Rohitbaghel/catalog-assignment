@@ -1,18 +1,22 @@
 'use client'
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area
-} from 'recharts';
+import { useState, useRef, useEffect } from 'react';
+import { Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, Bar, ComposedChart } from 'recharts';
 import { useBitcoinData } from "@/app/hooks/useBitcoin";
-import { generateDummyData } from '@/app/generateDummyData'; // Ensure this import is correct
 
 const CryptoChart = () => {
-  const [activeTimeframe, setActiveTimeframe] = useState("1w");
+  const [activeTimeframe, setActiveTimeframe] = useState("7");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { bitcoinData, isLoading, error, currentPrice } = useBitcoinData();
+  const { bitcoinData, isLoading, error } = useBitcoinData(parseInt(activeTimeframe));
   const chartRef = useRef(null);
 
-  const timeframes = ["1d", "3d", "1w", "1m", "6m", "1y", "max"];
+  const timeframes = [
+    { label: "1d", value: "1" },
+    { label: "7d", value: "7" },
+    { label: "30d", value: "30" },
+    { label: "90d", value: "90" },
+    { label: "1y", value: "365" },
+    { label: "max", value: "max" }
+  ];
 
   const handleTimeframeChange = (timeframe: string) => {
     setActiveTimeframe(timeframe);
@@ -20,17 +24,17 @@ const CryptoChart = () => {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      if (chartRef.current && chartRef?.current as any) {
-        const chartElement = chartRef.current as HTMLElement;
+      if (chartRef.current && chartRef.current as any) {
+        const chartElement = chartRef.current as HTMLElement & {
+          requestFullscreen(): Promise<void>;
+        };
         chartElement.requestFullscreen().catch((err: Error) => {
-					console.error(
-						`Error attempting to enable full-screen mode: ${err.message}`
-					);
-				});
-			}
-		} else {
-			document.exitFullscreen();
-		}
+          console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+        });
+      }
+    } else {
+      document.exitFullscreen();
+    }
   };
 
   useEffect(() => {
@@ -42,11 +46,16 @@ const CryptoChart = () => {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  const addGapsBetweenBars = (data: any) => {
+    return data.flatMap((item: any, index: any) => [
+      item,
+      { ...item, volume: 0, isGap: true }
+    ]);
+  };
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error fetching data</div>;
   if (!bitcoinData) return null;
-
-  const data = generateDummyData(currentPrice);
 
   return (
 		<div
@@ -96,17 +105,19 @@ const CryptoChart = () => {
 					</button>
 				</div>
 				<div className='flex space-x-1 text-sm'>
-					{timeframes.map(timeframe => (
+					{timeframes.map(({ label, value }) => (
 						<button
-							key={timeframe}
-							onClick={() => handleTimeframeChange(timeframe)}
+							key={value}
+							onClick={() => handleTimeframeChange(value)}
 							className={`px-3 py-1 rounded-md transition duration-150 ease-in-out ${
-								timeframe === activeTimeframe
+								value === activeTimeframe
 									? "bg-[#4F46E5] text-[#ffffff]"
 									: "bg-gray-100 text-gray-700 hover:bg-gray-200"
-							} focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:ring-opacity-50 ${isFullscreen ? "text-[#ffffff]" : ""}`}
+							} focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:ring-opacity-50 ${
+								isFullscreen ? "text-[#ffffff]" : ""
+							}`}
 						>
-							{timeframe}
+							{label}
 						</button>
 					))}
 				</div>
@@ -117,86 +128,121 @@ const CryptoChart = () => {
 					isFullscreen ? "h-[calc(100vh-120px)] bg-white" : "h-80"
 				} w-full bg-white rounded-xl`}
 			>
-				<ResponsiveContainer width='100%' height='100%'>
-					<LineChart
-						data={data}
-						margin={{ top: 5, right: 0, left: -40, bottom: 5 }}
-					>
-						<CartesianGrid strokeDasharray='3 3' stroke='#f0f0f0' />
-						<XAxis
-							dataKey='date'
-							tickFormatter={tick =>
-								new Date(tick).toLocaleDateString()
-							}
-							axisLine={false}
-							tickLine={false}
-							tick={false}
-						/>
-						<YAxis
-							domain={["auto", "auto"]}
-							axisLine={false}
-							tickLine={false}
-							tick={false}
-						/>
-						<Tooltip
-							contentStyle={{
-								background: "white",
-								border: "none",
-								borderRadius: "8px",
-								boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-								padding: "8px 12px"
-							}}
-							cursor={{ stroke: "#4F46E5", strokeWidth: 1 }}
-							formatter={(value: number) => [
-								`$${value.toFixed(0)}`,
-								"Price"
-							]}
-							labelFormatter={label =>
-								new Date(label).toLocaleDateString()
-							}
-						/>
-						<defs>
-							<linearGradient
-								id='colorPrice'
-								x1='0'
-								y1='0'
-								x2='0'
-								y2='1'
-							>
-								<stop
-									offset='5%'
-									stopColor='#4F46E5'
-									stopOpacity={0.8}
-								/>
-								<stop
-									offset='95%'
-									stopColor='#4F46E5'
-									stopOpacity={0.1}
-								/>
-							</linearGradient>
-						</defs>
-						<Area
-							type='monotone'
-							dataKey='price'
-							stroke='#4F46E5'
-							fillOpacity={1}
-							fill='url(#colorPrice)'
-						/>
-						<Line
-							type='monotone'
-							dataKey='price'
-							stroke='#4F46E5'
-							strokeWidth={2}
-							dot={false}
-							activeDot={{
-								r: 6,
-								fill: "#4F46E5",
-								stroke: "#fff",
-								strokeWidth: 2
-							}}
-						/>
-					</LineChart>
-				</ResponsiveContainer>
+				<div className="chart-container relative">
+					<ResponsiveContainer width="100%" height={400}>
+						<ComposedChart
+							data={addGapsBetweenBars(bitcoinData)}
+							margin={{ top: 5, right: 30, left: -50, bottom: 5 }}
+						>
+							<CartesianGrid strokeDasharray="3 3" />
+							<XAxis 
+								dataKey="date" 
+								axisLine={false}
+								tickLine={false}
+								tick={{ fill: 'transparent' }}
+							/>
+							<YAxis 
+								yAxisId="left" 
+								domain={["auto", "auto"]} 
+								axisLine={false}
+								tickLine={false}
+								tick={{ fill: 'transparent' }}
+							/>
+							<YAxis 
+								yAxisId="right" 
+								orientation="right" 
+								domain={[0, (dataMax: any) => dataMax * 2]} 
+								axisLine={false}
+								tickLine={false}
+								tick={{ fill: 'transparent' }}
+							/>
+							<Tooltip
+								contentStyle={{
+									background: "rgba(255, 255, 255, 0.95)",
+									border: "1px solid rgba(0, 0, 0, 0.1)",
+									borderRadius: "8px",
+									boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+									padding: "8px 12px"
+								}}
+								cursor={{ stroke: "#4F46E5", strokeWidth: 1 }}
+								content={(props: any) => {
+									const { payload, label } = props;
+									if (payload && payload.length) {
+										const priceData = payload.find((p: any) => p.dataKey === 'price');
+										const volumeData = payload.find((p: any) => p.dataKey === 'volume');
+										const date = new Date(label).toLocaleDateString();
+										return (
+											<div className="custom-tooltip bg-white bg-opacity-95 p-3 rounded-lg shadow-md border border-gray-200">
+												<p className="text-sm text-gray-500 mb-1">{date}</p>
+												{priceData && (
+													<p className="text-lg font-bold text-[#4F46E5]">
+														${priceData.value.toFixed(2)}
+													</p>
+												)}
+												{volumeData && (
+													<p className="text-sm text-gray-600">
+														Volume: {volumeData.value.toLocaleString()}
+													</p>
+												)}
+											</div>
+										);
+									}
+									return null;
+								}}
+								labelFormatter={() => ""}
+							/>
+							<defs>
+								<linearGradient
+									id='colorPrice'
+									x1='0'
+									y1='0'
+									x2='0'
+									y2='1'
+								>
+									<stop
+										offset='5%'
+										stopColor='#4F46E5'
+										stopOpacity={0.1}
+									/>
+									<stop
+										offset='95%'
+										stopColor='#4F46E5'
+										stopOpacity={0.01}
+									/>
+								</linearGradient>
+							</defs>
+							<Area
+								yAxisId='left'
+								type='monotone'
+								dataKey='price'
+								stroke='#4F46E5'
+								fillOpacity={0.1}
+								fill='url(#colorPrice)'
+							/>
+							<Bar
+								yAxisId='right'
+								dataKey='volume'
+								fill='#E6E8EB'
+								opacity={0.5}
+								barSize={4}
+							/>
+							<Line
+								yAxisId='left'
+								type='monotone'
+								dataKey='price'
+								stroke='#4F46E5'
+								strokeWidth={2}
+								dot={false}
+								activeDot={{
+									r: 6,
+									fill: "#4F46E5",
+									stroke: "#fff",
+									strokeWidth: 2
+								}}
+							/>
+						</ComposedChart>
+					</ResponsiveContainer>
+				</div>
 			</div>
 		</div>
   );
