@@ -3,8 +3,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, Bar, ComposedChart } from 'recharts';
 import { useBitcoinData } from "@/app/hooks/useBitcoin";
 
-const CryptoChart = () => {
-  const [activeTimeframe, setActiveTimeframe] = useState("7");
+const CryptoChart = ({ 
+  activeTimeframe, 
+  setActiveTimeframe 
+}: { 
+  activeTimeframe: string, 
+  setActiveTimeframe: (timeframe: string) => void 
+}) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { bitcoinData, isLoading, error } = useBitcoinData(parseInt(activeTimeframe));
 	const chartRef = useRef(null);
@@ -67,7 +72,13 @@ const CryptoChart = () => {
     ]);
   };
 
-  if (isLoading) return <div>Loading...</div>;
+   if (isLoading) {
+		return (
+			<div className='flex justify-center items-center h-[400px]'>
+				<div className='animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-blue-500'></div>
+			</div>
+		);
+   }
   if (error) return <div>Error fetching data</div>;
   if (!bitcoinData) return null;
 
@@ -89,7 +100,7 @@ const CryptoChart = () => {
 					<div className='flex space-x-3'>
 						<button
 							onClick={toggleFullscreen}
-							className='px-3 py-2 text-sm bg-gray-100 rounded-md hover:bg-gray-200 transition duration-150 ease-in-out flex items-center'
+							className='px-3 py-2 text-[#6F7177] text-lg font-normal bg-gray-100 rounded-md hover:bg-gray-200 transition duration-150 ease-in-out flex items-center'
 						>
 							<svg
 								className='w-4 h-4 mr-1'
@@ -107,7 +118,7 @@ const CryptoChart = () => {
 							</svg>
 							{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
 						</button>
-						<button className='px-3 py-2 text-sm bg-gray-100 rounded-md hover:bg-gray-200 transition duration-150 ease-in-out flex items-center'>
+						<button className='px-3 py-2 bg-gray-100 text-[#6F7177] text-lg font-normal rounded-md hover:bg-gray-200 transition duration-150 ease-in-out flex items-center'>
 							<svg
 								className='w-4 h-4 mr-1'
 								fill='none'
@@ -130,10 +141,10 @@ const CryptoChart = () => {
 							<button
 								key={value}
 								onClick={() => handleTimeframeChange(value)}
-								className={`px-3 py-1 rounded-md transition duration-150 ease-in-out ${
+								className={`px-3 py-1 rounded-md transition duration-150 ease-in-out  text-lg font-normal ${
 									value === activeTimeframe
 										? "bg-[#4F46E5] text-[#ffffff]"
-										: "bg-gray-100 text-gray-700 hover:bg-gray-200"
+										: "bg-gray-100 text-[#6F7177] hover:bg-gray-200"
 								} focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:ring-opacity-50 `}
 							>
 								{label}
@@ -215,8 +226,14 @@ const CryptoChart = () => {
 											(priceChange / previousPrice) * 100;
 
 										return (
-											<div className='custom-tooltip bg-white  p-3 rounded-lg shadow-md border border-gray-200' style={{background: "rgba(255, 255, 255, 0.95)"}}>
-												<p className='text-sm text-gray-500 mb-1'>
+											<div
+												className='custom-tooltip bg-white  p-3 rounded-lg shadow-md border border-gray-200'
+												style={{
+													background:
+														"rgba(255, 255, 255, 0.95)"
+												}}
+											>
+												<p className='text-sm font-normal text-gray-500 mb-1'>
 													{date}
 												</p>
 												{currentPrice && (
@@ -229,7 +246,7 @@ const CryptoChart = () => {
 																		? "rgb(34, 197, 94)"
 																		: "rgb(239, 68, 68)"
 															}}
-															className={`text-lg font-bold`}
+															className={`text-lg font-normal`}
 														>
 															$
 															{currentPrice.value.toFixed(
@@ -244,7 +261,7 @@ const CryptoChart = () => {
 																		? "rgb(34, 197, 94)"
 																		: "rgb(239, 68, 68)"
 															}}
-															className={`text-sm `}
+															className={`text-sm font-normal`}
 														>
 															{priceChange >= 0
 																? "+"
@@ -261,7 +278,7 @@ const CryptoChart = () => {
 													</>
 												)}
 												{volumeData && (
-													<p className='text-sm text-gray-600'>
+													<p className='text-sm text-gray-600 font-normal'>
 														Volume:{" "}
 														{volumeData.value.toLocaleString()}
 													</p>

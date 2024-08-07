@@ -15,24 +15,26 @@ const fetchBitcoinData = async (days: number): Promise<BitcoinData> => {
   return response.json();
 };
 
-export const useBitcoinData = (days: number = 30) => {
-  const { data, isLoading, error } = useQuery<BitcoinData>({
+export const useBitcoinData = (days: number = 7) => {
+  const { data, isLoading, error, refetch } = useQuery<BitcoinData>({
     queryKey: ['bitcoinData', days],
     queryFn: () => fetchBitcoinData(days),
     refetchInterval: 60000, // Refetch every minute
   });
 
-  const formattedData = data?.prices.map(([timestamp, price]) => ({
+  console.log(days, "data");
+
+  const formattedData = data?.prices.map(([timestamp, price], index) => ({
     date: new Date(timestamp).toISOString().split('T')[0],
     price: price,
-    volume: data.total_volumes.find(vol => vol[0] === timestamp)?.[1] || 0
+    volume: data.total_volumes.find(vol => vol[0] === timestamp)?.[1] || 0,
+    index: index
   })) || [];
 
   const currentPrice = formattedData[formattedData.length - 1]?.price || 0;
-  const previousPrice = formattedData[formattedData.length - 2]?.price || 0;
-  const priceChange = currentPrice - previousPrice;
-  const percentChange = (priceChange / previousPrice) * 100;
-
+  const firstPrice = formattedData[0]?.price || 0;
+  const priceChange = currentPrice - firstPrice;
+  const percentChange = firstPrice !== 0 ? (priceChange / firstPrice) * 100 : 0;
   return {
     bitcoinData: formattedData,
     isLoading,
@@ -40,5 +42,6 @@ export const useBitcoinData = (days: number = 30) => {
     currentPrice,
     priceChange,
     percentChange,
+    refetch,
   };
 };

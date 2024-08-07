@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import { Crypto } from "@/components/Crypto";
-
-const inter = Inter({ subsets: ["latin"] });
+import { CryptoContainer } from "@/components/CryptoContainer";
 
 export const metadata: Metadata = {
   title: "Crypto Dashboard",
@@ -18,9 +16,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className={`${inter.className} max-w-4xl mx-auto`}>
+      <head>
+        <link
+          href="https://db.onlinewebfonts.com/c/860c3ec7bbc5da3e97233ccecafe512e?family=Circular+Std+Book"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="font-circular max-w-4xl mx-auto">
         <Providers>
-          <Crypto />
           <main>{children}</main>
         </Providers>
       </body>
