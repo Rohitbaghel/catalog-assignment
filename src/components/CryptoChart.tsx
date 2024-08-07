@@ -181,7 +181,7 @@ const CryptoChart = () => {
 							/>
 							<Tooltip
 								contentStyle={{
-									background: "rgba(255, 255, 255, 1)",
+									background: "white",
 									border: "1px solid rgba(0, 0, 0, 0.1)",
 									borderRadius: "8px",
 									boxShadow: "0 4px 6px rgba(0,0,0,1)",
@@ -215,7 +215,7 @@ const CryptoChart = () => {
 											(priceChange / previousPrice) * 100;
 
 										return (
-											<div className='custom-tooltip bg-white bg-opacity-95 p-3 rounded-lg shadow-md border border-gray-200'>
+											<div className='custom-tooltip bg-white  p-3 rounded-lg shadow-md border border-gray-200' style={{background: "rgba(255, 255, 255, 0.95)"}}>
 												<p className='text-sm text-gray-500 mb-1'>
 													{date}
 												</p>
