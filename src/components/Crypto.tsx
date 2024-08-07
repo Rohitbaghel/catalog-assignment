@@ -35,8 +35,8 @@ export const Crypto = () => {
       <nav className='border-b border-gray-200'>
         <ul className='flex space-x-8'>
           {[
-            { href: '/', label: 'Summary' },
-            { href: '/chart', label: 'Chart' },
+            { href: '/summary', label: 'Summary' },
+            { href: '/', label: 'Chart' },
             { href: '/statistics', label: 'Statistics' },
             { href: '/analysis', label: 'Analysis' },
             { href: '/settings', label: 'Settings' }

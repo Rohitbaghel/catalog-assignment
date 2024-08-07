@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import Chart from './chart/page';
 
 export default function Home() {
-  redirect('/chart');
+  return <Chart />;
 }
