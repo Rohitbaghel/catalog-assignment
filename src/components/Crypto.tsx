@@ -63,10 +63,10 @@ export const Crypto = ({ timeframe }: { timeframe: string }) => {
 					].map(({ href, label }) => (
 						<li key={href}>
 							<div
-								className={`text-[#6F7177] hover:text-[#1E293B] pb-4 border-b-2 text-[24px] font-normal ${
+								className={` pb-4 border-b-2 text-[24px] font-normal ${
 									pathname === href
-										? "border-[#4F46E5] text-[#1A243A] "
-										: "border-transparent "
+										? "border-[#4F46E5] text-[#1A243A]"
+										: "border-transparent text-[#6F7177]"
 								}`}
 							>
 								{label}
