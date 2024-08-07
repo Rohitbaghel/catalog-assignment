@@ -8,6 +8,9 @@ export const Crypto = () => {
   const { currentPrice, priceChange, percentChange } = useBitcoinData();
   const pathname = usePathname();
 
+  // Format the percentage change, handling potential NaN values
+  const formattedPercentChange = isNaN(percentChange) ? '0.00' : Math.abs(percentChange).toFixed(2);
+
   return (
     <div className='w-full max-w-4xl px-9 py-6'>
       <div className='mb-6'>
@@ -29,7 +32,7 @@ export const Crypto = () => {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           })}{" "}
-          ({Math.abs(percentChange).toFixed(2)}%)
+          ({formattedPercentChange}%)
         </p>
       </div>
       <nav >
