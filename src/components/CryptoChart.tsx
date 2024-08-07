@@ -68,7 +68,7 @@ const CryptoChart = () => {
   return (
     <div
       ref={chartRef}
-      className={`crypto-chart bg-white p-6 rounded-xl shadow-sm ${
+      className={`crypto-chart bg-white p-6 rounded-xl shadow-sm fullscreen-bg-white ${
         isFullscreen ? "fixed inset-0 z-50 w-screen h-screen" : "max-w-4xl mx-auto"
       }`}
     >
@@ -206,14 +206,14 @@ const CryptoChart = () => {
                   y2='1'
                 >
                   <stop
-                    offset='5%'
+                    offset='0%'
                     stopColor='#4F46E5'
-                    stopOpacity={0.1}
+                    stopOpacity={0.2}
                   />
                   <stop
-                    offset='95%'
+                    offset='100%'
                     stopColor='#4F46E5'
-                    stopOpacity={0.01}
+                    stopOpacity={0.05}
                   />
                 </linearGradient>
               </defs>
@@ -222,14 +222,14 @@ const CryptoChart = () => {
                 type='monotone'
                 dataKey='price'
                 stroke='#4F46E5'
-                fillOpacity={0.1}
+                fillOpacity={1}
                 fill='url(#colorPrice)'
               />
               <Bar
                 yAxisId='right'
                 dataKey='volume'
                 fill='#E6E8EB'
-                opacity={0.5}
+                opacity={1}
                 barSize={4}
               />
               <Line
