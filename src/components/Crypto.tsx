@@ -11,9 +11,9 @@ export const Crypto = () => {
   return (
     <div className='w-full max-w-4xl px-9 py-6'>
       <div className='mb-6'>
-        <div className='flex items-baseline gap-x-2'>
+        <div className='flex items-start gap-x-2'>
           <h1 className='text-[56px] font-bold text-[#1E293B]'>{currentPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h1>
-          <p className='text-[24px] font-normal text-[#64748B]'>USD</p>
+          <p className='text-[24px] font-normal text-[#64748B] mt-4'>USD</p>
         </div>
         <p
           style={{
@@ -32,7 +32,7 @@ export const Crypto = () => {
           ({Math.abs(percentChange).toFixed(2)}%)
         </p>
       </div>
-      <nav className='border-b border-gray-200'>
+      <nav >
         <ul className='flex space-x-8'>
           {[
             { href: '/summary', label: 'Summary' },
