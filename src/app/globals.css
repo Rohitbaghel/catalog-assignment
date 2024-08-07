@@ -79,3 +79,6 @@
   stroke-dasharray: 3 3 !important;
 }
 
+:fullscreen, ::backdrop {
+  background-color: white !important;
+}
